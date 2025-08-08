@@ -1,49 +1,60 @@
 Q1. Write a function to display name for a given roll number ?.
 
-CREATE OR REPLACE FUNCTION getname(trno in int) RETURNS varchar AS'
-DECLARE
-	tname student.name%TYPE;
-BEGIN
-	SELECT name into tname 
-	FROM student where rno=trno;
-	
-	if FOUND then
-		return tname;
-	else
-		return ''Record Not Found.'';
-	end if;
+	CREATE OR REPLACE FUNCTION getname(trno in int) RETURNS varchar AS'
+	DECLARE
+		tname student.name%TYPE;
+	BEGIN
+		SELECT name into tname 
+		FROM student where rno=trno;
+		
+		if FOUND then
+			return tname;
+		else
+			return ''Record Not Found.'';
+		end if;
+	END;
+	'LANGUAGE 'plpgsql';
+
+
+
+
+
+
+Q2.Write a function to display max & min percentage ?.
+
+	CREATE OR REPLACE FUNCTION maxmin() RETURNS varchar AS'
+	DECLARE
+		tmax student.per%TYPE;
+		tmin student.per%TYPE;
+	BEGIN
+		SELECT max(per),min(per) INTO tmax, tmin FROM student;
+		
+		return ''Max=''||tmax ||'' MIN=''||tmin;
+
 END;
 'LANGUAGE 'plpgsql';
 
 
-Write a function to display max & min percentage ?.
 
-CREATE OR REPLACE FUNCTION maxmin() RETURNS varchar AS'
-DECLARE
+	CREATE OR REPLACE FUNCTION maxmin2() RETURNS SETOF varchar AS'
+	DECLARE
 	tmax student.per%TYPE;
-	tmin student.per%TYPE;
-BEGIN
-	SELECT max(per),min(per) INTO tmax, tmin FROM student;
-	
-	return ''Max=''||tmax ||'' MIN=''||tmin;
+		tmin student.per%TYPE;
+	BEGIN
+		SELECT max(per),min(per) INTO tmax, tmin FROM student;
+		
+		return next ''Max=''||tmax;
+		return next ''Min=''||tmin;
 
-END;
-'LANGUAGE 'plpgsql';
+	END;
+	'LANGUAGE 'plpgsql';
 
 
 
-CREATE OR REPLACE FUNCTION maxmin2() RETURNS SETOF varchar AS'
-DECLARE
-tmax student.per%TYPE;
-	tmin student.per%TYPE;
-BEGIN
-	SELECT max(per),min(per) INTO tmax, tmin FROM student;
-	
-	return next ''Max=''||tmax;
-	return next ''Min=''||tmin;
 
-END;
-'LANGUAGE 'plpgsql';
+
+
+
 
 
 Q3.Write a Function which display all information 
@@ -72,54 +83,76 @@ Q3.Write a Function which display all information
 		RETURN QUERY select * from student where rno=trno;
 	END;
 	'LANGUAGE 'plpgsql';
+
+
+
+
+
+
+
+
+
 	
 Q4. Write a Function which display all information about till rno
  
- CREATE OR REPLACE FUNCTION displayinfo3(n in int) RETURNS varchar AS'
-	DECLARE 
-		srec student%ROWTYPE;
-		i int;
-		
-		
-	BEGIN	
-		for i in 1..n
-		loop
-			SELECT * into srec FROM STUDENT WHERE rno=i;
+	 CREATE OR REPLACE FUNCTION displayinfo3(n in int) RETURNS varchar AS'
+		DECLARE 
+			srec student%ROWTYPE;
+			i int;
 			
-			if FOUND then
-			   raise notice ''% % %'', srec.rno, srec.name,srec.per;
-			end if;
-		end loop;
-		
-		return ''DONE !!!'';
-	END;
-	'LANGUAGE 'plpgsql'; 
+			
+		BEGIN	
+			for i in 1..n
+			loop
+				SELECT * into srec FROM STUDENT WHERE rno=i;
+				
+				if FOUND then
+				   raise notice ''% % %'', srec.rno, srec.name,srec.per;
+				end if;
+			end loop;
+			
+			return ''DONE !!!'';
+		END;
+		'LANGUAGE 'plpgsql'; 
 	
-  
-  CREATE OR REPLACE FUNCTION displayinfo4() RETURNS TABLE(new_rno int ,new_name varchar,new_per float) AS'
-  BEGIN
-  	RETURN QUERY SELECT rno,name,per FROM student;
-  END;
-  'LANGUAGE 'plpgsql';
-  
-  
-  Q5.Display All information in Give name
-  
- CREATE OR REPLACE FUNCTION get_name(tname IN student.name%TYPE)
-RETURNS BOOLEAN AS $$
-DECLARE
-    srec student%ROWTYPE;
-BEGIN
-    SELECT * INTO srec FROM student WHERE name = tname;
+	
+	
+	
+	
+	
+	  
+	  CREATE OR REPLACE FUNCTION displayinfo4() RETURNS TABLE(new_rno int ,new_name varchar,new_per float) AS'
+	  BEGIN
+	  	RETURN QUERY SELECT rno,name,per FROM student;
+	  END;
+	  'LANGUAGE 'plpgsql';
+	  
 
-    IF NOT FOUND THEN
-        RAISE NOTICE 'RECORD NOT FOUND';
-        RETURN FALSE;
-    ELSE
-        RAISE NOTICE '% % %', srec.rno, srec.name, srec.per;
-        RETURN TRUE;
-    END IF;
-END;
-$$ LANGUAGE plpgsql;
+
+
+
+
+
+
+
+  
+Q5.Display All information in Give name
+  
+	CREATE OR REPLACE FUNCTION get_name(tname IN student.name%TYPE)
+	RETURNS BOOLEAN AS $$
+	DECLARE
+	    srec student%ROWTYPE;
+	BEGIN
+	    SELECT * INTO srec FROM student WHERE name = tname;
+
+	    IF NOT FOUND THEN
+		RAISE NOTICE 'RECORD NOT FOUND';
+		RETURN FALSE;
+	    ELSE
+		RAISE NOTICE '% % %', srec.rno, srec.name, srec.per;
+		RETURN TRUE;
+	    END IF;
+	END;
+	$$ LANGUAGE plpgsql;
 
   

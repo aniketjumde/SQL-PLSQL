@@ -1,82 +1,94 @@
 Q1.Write  Function to print message
 -------------------------------------
-String msg()
-{
-	String s='Hello World'
-	return s;
-}
+	String msg()
+	{
+		String s='Hello World'
+		return s;
+	}
 
 
-CREATE OR REPLACE FUNCTION msg() RETURNS varchar AS'
-DECLARE
-	s varchar:=''Hello world'';
-BEGIN
-	return s;
-END;
-'LANGUAGE 'plpgsql';
+	CREATE OR REPLACE FUNCTION msg() RETURNS varchar AS'
+	DECLARE
+		s varchar:=''Hello world'';
+	BEGIN
+		return s;
+	END;
+	'LANGUAGE 'plpgsql';
+
+
+
+
 
 
 
 Q2.Write a function to Addition of two number.
 
 
-CREATE OR REPLACE FUNCTION addition(x in int,y in int) RETURNS int AS'
-DECLARE
-	z int;
-BEGIN
-	z=x+y;
-	return z;
-END;
-'LANGUAGE 'plpgsql';
+	CREATE OR REPLACE FUNCTION addition(x in int,y in int) RETURNS int AS'
+	DECLARE
+		z int;
+	BEGIN
+		z=x+y;
+		return z;
+	END;
+	'LANGUAGE 'plpgsql';
+
+
+
+
 
 
 Q3.Write a Function Which return maximum of two number ?.
 
-CREATE OR REPLACE FUNCTION maximum(x in int,y in int) RETURNS int AS'
-DECLARE
-	max int;
-BEGIN
-	if x>y then
-	   max=x;
-	else
-	   max=y;
-	end if;
-	
-	
-	return max;
-END;
+	CREATE OR REPLACE FUNCTION maximum(x in int,y in int) RETURNS int AS'
+	DECLARE
+		max int;
+	BEGIN
+		if x>y then
+		   max=x;
+		else
+		   max=y;
+		end if;
+		
+		
+		return max;
+	END;
 
-'LANGUAGE 'plpgsql';
+	'LANGUAGE 'plpgsql';
+
+
+
+
 
 Q4. Write a function which display message Given number of time?
 
 
-CREATE OR REPLACE FUNCTION nmsg(n in int) RETURNS boolean AS'
-DECLARE
-	i int;
-BEGIN
-	for i in 1..n
-	loop
-		raise notice ''Hello world'';
-	end loop;
-	return true;
-	
-END;
-'LANGUAGE 'plpgsql';
+	CREATE OR REPLACE FUNCTION nmsg(n in int) RETURNS boolean AS'
+	DECLARE
+		i int;
+	BEGIN
+		for i in 1..n
+		loop
+			raise notice ''Hello world'';
+		end loop;
+		return true;
+		
+	END;
+	'LANGUAGE 'plpgsql';
 
 
 
 
-CREATE OR REPLACE FUNCTION nmsg(n INT) RETURNS BOOLEAN AS $$
-DECLARE
-    i INT;
-BEGIN
-    FOR i IN 1..n LOOP
-        RAISE NOTICE 'Hello world %', i;
-    END LOOP;
-    RETURN TRUE;
-END;
-$$ LANGUAGE plpgsql;
+	CREATE OR REPLACE FUNCTION nmsg(n INT) RETURNS BOOLEAN AS $$
+	DECLARE
+	    i INT;
+	BEGIN
+	    FOR i IN 1..n LOOP
+		RAISE NOTICE 'Hello world %', i;
+	    END LOOP;
+	    RETURN TRUE;
+	END;
+	$$ LANGUAGE plpgsql;
 
 
 

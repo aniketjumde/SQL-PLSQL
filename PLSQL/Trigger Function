@@ -1,0 +1,66 @@
+Q1.Write a trigger Which does not allow user to delete records having percenatage greater than or equal to 70.
+
+	CREATE OR REPLACE FUNCTION deltrig() RETURNS trigger AS'
+	BEGIN
+		if OLD.per>=70 then
+			raise exception ''Can not delete this record.!!!'';
+		end if;
+		return OLD;
+	END;
+	'LANGUAGE 'plpgsql';
+
+
+	CREATE trigger deltrg
+	before DELETE
+	on student
+	for each row
+	execute procedure deltrig();
+
+
+
+
+
+Q2.Write a trigger which does not allow user to inser or update negative or more than 100 percentage ?
+
+	CREATE OR REPLACE FUNCTION netrig() RETURNS trigger As'
+	BEGIN
+		if NEW.per<0 OR NEW.per>100 then
+		   raise exception ''Percentage must be in 0 & 100 !!!.'';
+		   return NULL;
+		end if;
+		
+		return NEW;
+	END;
+	'LANGUAGE 'plpgsql';
+	
+	
+	CREATE trigger negtrig
+	BEFORE INSERT OR UPDATE
+	on student
+	FOR EACH ROW
+	execute procedure netrig();
+
+
+
+
+
+Q3.Write a trigger which allows to update EMP(eno,ename,salary) salary only if new salary more than old salary.
+
+	CREATE OR REPLACE FUNCTION uptrig() RETURNS trigger AS'
+	BEGIN
+		if OLD.salary>NEW.salary then
+		raise exception ''Can not update Salary'';
+		return NULL;
+		end if;
+		
+		return NEW;
+
+	END;
+	'LANGUAGE 'plpgsql';
+	
+	Create trigger uptrig
+	before insert or update
+	on employee
+	for each row
+	execute procedure uptrig();
+
