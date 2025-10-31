@@ -1,0 +1,387 @@
+What Is a Relationship in SQL?
+A relationship in SQL defines how two or more tables are connected to each other using keys — mainly Primary Key and Foreign Key.
+
+
+*** Types of relationship
+1) Many To Many
+	ex : Student ↔ Course
+		A student can enroll in many courses,
+		and a course can have many students.
+2) One To Many / Many To One
+	ex : every city exactly have one state but state can have may city
+3) One To one
+	ex : person can have only one Passport
+
+
+
+===============
+1)Many To Many Relationship
+
+Student and Teacher are related with many to many realtionship with descriptive attribute
+
+
+What is a Descriptive Attribute?
+A descriptive attribute is something that tells more details about an entity (table) or a relationship, but it does not define it uniquely.
+
+What is a Foreign Key?
+
+A Foreign Key is a column (or a group of columns) in one table that links to the Primary Key in another table.
+
+A foreign key acts like a connection between two tables.
+It ensures that the value in one table must exist in another.
+
+
+ex:
+	Student(rno,name,per,city)
+	Teacher(tno,name,salary,city)
+	Student_Teacher(rno,tno,ldate)
+	
+ldate is a Desccrptive attribute 
+
+
+CREATE TABLE student(rno int PRIMARY KEY,
+		     name VARCHAR(20),
+		     per float,
+		     city varchar(20)
+		     );
+		  
+CREATE TABLE teacher(tno int PRIMARY KEY,
+		     name VARCHAR(20),
+		     salary float,
+		     city varchar(20)
+		     );
+
+CREATE TABLE ST(rno int references student(rno) ON DELETE CASCADE ON UPDATE CASCADE,
+		tno int references teacher(tno) ON DELETE CASCADE ON UPDATE CASCADE,
+		ldate DATE 
+		); 
+		
+		
+INSERT INTO student VALUES
+(1, 'Aniket', 85.6, 'Pune'),
+(2, 'Ravi', 78.4, 'Mumbai'),
+(3, 'Priya', 91.2, 'Nagpur'),
+(4, 'Sneha', 88.5, 'Nashik'),
+(5, 'Rahul', 72.9, 'Kolhapur');
+
+
+INSERT INTO teacher VALUES
+(101, 'Mr. Joshi', 55000, 'Pune'),
+(102, 'Mrs. Patil', 60000, 'Mumbai'),
+(103, 'Mr. Deshmukh', 58000, 'Nagpur'),
+(104, 'Mrs. Kulkarni', 62000, 'Nashik'),
+(105, 'Mr. Pawar', 57000, 'Kolhapur');
+
+
+INSERT INTO ST VALUES
+(1, 101, '2025-01-10'),
+(1, 104, '2025-02-05'),
+(2, 103, '2025-03-15'),
+(3, 104, '2025-04-12'),
+(2, 105, '2025-05-20');
+
+
+
+
+tcadb15=# SELECT * FROM student;
+
+ rno |  name  | per  |   city   
+-----+--------+------+----------
+   1 | Aniket | 85.6 | Pune
+   2 | Ravi   | 78.4 | Mumbai
+   3 | Priya  | 91.2 | Nagpur
+   4 | Sneha  | 88.5 | Nashik
+   5 | Rahul  | 72.9 | Kolhapur
+(5 rows)
+
+tcadb15=# SELECT * FROM teacher;
+
+
+ tno |     name      | salary |   city   
+-----+---------------+--------+----------
+ 101 | Mr. Joshi     |  55000 | Pune
+ 102 | Mrs. Patil    |  60000 | Mumbai
+ 103 | Mr. Deshmukh  |  58000 | Nagpur
+ 104 | Mrs. Kulkarni |  62000 | Nashik
+ 105 | Mr. Pawar     |  57000 | Kolhapur
+(5 rows)
+
+tcadb15=# SELECT * FROM st;  
+
+ rno | tno |   ldate    
+-----+-----+------------
+   1 | 101 | 2025-01-10
+   1 | 104 | 2025-02-05
+   2 | 103 | 2025-03-15
+   3 | 104 | 2025-04-12
+   2 | 105 | 2025-05-20
+(5 rows)
+
+
+
+1)	SELECT * FROM student, teacher, st;
+
+this query does not specify any join condition — so it performs a Cartesian Product (Cross Join).
+
+That means:
+
+Every row from student is combined with
+
+Every row from teacher, and
+
+Every row from st
+
+→ resulting in all possible combinations of rows.
+
+So total rows =
+👉 5 × 5 × 5 = 125 rows
+
+
+
+
+2) NATURAL JOIN
+
+   SELECT * FROM student S,teacher T,st				
+   WHERE S.rno=st.rno
+   AND T.tno=st.tno
+   
+   tcadb15-# ;
+ rno |  name  | per  |  city  | tno |     name      | salary |   city   | rno | tno |   ldate    
+-----+--------+------+--------+-----+---------------+--------+----------+-----+-----+------------
+   1 | Aniket | 85.6 | Pune   | 101 | Mr. Joshi     |  55000 | Pune     |   1 | 101 | 2025-01-10
+   1 | Aniket | 85.6 | Pune   | 104 | Mrs. Kulkarni |  62000 | Nashik   |   1 | 104 | 2025-02-05
+   2 | Ravi   | 78.4 | Mumbai | 103 | Mr. Deshmukh  |  58000 | Nagpur   |   2 | 103 | 2025-03-15
+   3 | Priya  | 91.2 | Nagpur | 104 | Mrs. Kulkarni |  62000 | Nashik   |   3 | 104 | 2025-04-12
+   2 | Ravi   | 78.4 | Mumbai | 105 | Mr. Pawar     |  57000 | Kolhapur |   2 | 105 | 2025-05-20
+(5 rows)
+
+
+3) Display Student From Pune city
+	
+	SELECT * FROM Student where city='Pune';
+	
+rno |  name  | per  | city 
+-----+--------+------+------
+   1 | Aniket | 85.6 | Pune
+   
+4) Display Names of those Student Who are pesent in lecture ?
+
+  SELECT S.name FROM student S,teacher T ,ST 
+  WHERE S.rno=ST.rno
+  AND 	T.tno=ST.tno;
+  
+  
+  tcadb15=#  SELECT S.name FROM student S,teacher T ,ST 
+  WHERE S.rno=ST.rno
+  AND   T.tno=ST.tno;
+  name  
+--------
+ Aniket
+ Aniket
+ Ravi
+ Priya
+ Ravi
+(5 rows)
+
+tcadb15=# 
+tcadb15=#  SELECT DISTINCT S.name FROM student S,teacher T ,ST 
+  WHERE S.rno=ST.rno
+  AND   T.tno=ST.tno;
+  name  
+--------
+ Aniket
+ Ravi
+ Priya
+(3 rows)
+
+tcadb15=# SELECT DISTINCT S.name FROM Student S,ST WHERE S.rno=ST.rno;
+  name  
+--------
+ Aniket
+ Ravi
+ Priya
+(3 rows)
+
+
+
+
+
+5)DISPLAY Student WISE LIST OF Teacher
+
+tcadb15=# SELECT S.name,T.name FROM Student S,Teacher T,ST
+WHERE S.rno=ST.rno
+AND T.tno=ST.tno;
+  
+  name  |     name      
+--------+---------------
+ Aniket | Mr. Joshi
+ Aniket | Mrs. Kulkarni
+ Ravi   | Mr. Deshmukh
+ Priya  | Mrs. Kulkarni
+ Ravi   | Mr. Pawar
+  
+
+
+
+6)DISPLAY Teacher WISE LIST OF Student
+
+tcadb15=# SELECT T.name , S.name FROM Student S,Teacher T,ST
+WHERE S.rno=ST.rno
+AND T.tno=ST.tno;
+     name      |  name  
+---------------+--------
+ Mr. Joshi     | Aniket
+ Mrs. Kulkarni | Aniket
+ Mr. Deshmukh  | Ravi
+ Mrs. Kulkarni | Priya
+ Mr. Pawar     | Ravi
+
+
+7) Display Student Name Whos teaching Mrs. Kulkarni
+
+SELECT T.name , S.name FROM Student S,Teacher T,ST
+WHERE S.rno=ST.rno
+AND T.tno=ST.tno
+AND T.name='Mrs. Kulkarni';
+
+     name      |  name  
+---------------+--------
+ Mrs. Kulkarni | Aniket
+ Mrs. Kulkarni | Priya
+
+
+SELECT  S.name FROM Student S,Teacher T,ST
+WHERE S.rno=ST.rno
+AND T.tno=ST.tno
+AND T.name='Mrs. Kulkarni';
+
+
+tcadb15=# SELECT  S.name FROM Student S,Teacher T,ST
+WHERE S.rno=ST.rno
+AND T.tno=ST.tno
+AND T.name='Mrs. Kulkarni';
+  name  
+--------
+ Aniket
+ Priya
+
+
+
+8)Show the name of Student Those are Pesent in '2025-02-05'
+
+tcadb15=# SELECT S.name FROM Student S,teacher T,ST
+WHERE S.rno=ST.rno
+AND T.tno=ST.tno
+AND ldate='2025-02-05';
+  name  
+--------
+ Aniket
+ Ravi
+
+
+9) Display How many Student are Present on this Day 2025-02-05
+
+SELECT count(S.name) FROM Student S,teacher T,ST
+WHERE S.rno=ST.rno
+AND T.tno=ST.tno
+AND ldate='2025-02-05'
+
+tcadb15=# SELECT count(S.name) FROM Student S,teacher T,ST
+WHERE S.rno=ST.rno
+AND T.tno=ST.tno
+AND ldate='2025-02-05'
+tcadb15-# ;
+ count 
+-------
+     2
+
+
+SELECT COUNT(*) FROM ST WHERE ldate='2025-02-05';
+
+tcadb15=# SELECT COUNT(*) FROM ST WHERE ldate='2025-02-05';
+ count 
+-------
+     2
+
+
+10)  Display list of Absent Student ?
+
+SELECT * From Student WHERE name NOT IN (SELECT S.name FROM Student S,teacher T,ST
+WHERE S.rno=ST.rno
+AND T.tno=ST.tno
+AND ldate='2025-02-05');
+
+
+rno | name  | per  |   city   
+-----+-------+------+----------
+   3 | Priya | 91.2 | Nagpur
+   4 | Sneha | 88.5 | Nashik
+   5 | Rahul | 72.9 | Kolhapur
+
+
+
+11) Dispka information of tecaher those earning Maxium Salary.
+
+	SELECT * FROM Teacher Where salary=(SELECT MAX(salary) FROM Teacher)
+	
+	tcadb15=#       SELECT * FROM Teacher Where salary=(SELECT MAX(salary) FROM Teacher);
+ tno |     name      | salary |  city  
+-----+---------------+--------+--------
+ 104 | Mrs. Kulkarni |  62000 | Nashik
+(1 row)
+
+12) Display name of Student those are Maximum salary Teacher are teching
+
+SELECT S.name FROM Student S,Teacher T,ST
+WHERE S.rno=ST.rno
+AND T.tno=ST.tno
+AND salary=(SELECT MAX(salary) FROM Teacher);
+
+ name  
+--------
+ Aniket
+ Priya
+(2 rows)
+
+
+13)Display Name of Student and Techer From Pune City
+
+SELECT name FROM Student Where City='Pune' UNION SELECT name FROM Teacher Where City='Pune';
+
+tcadb15=# SELECT name FROM Student Where City='Pune' UNION SELECT name FROM Teacher Where City='Pune';
+   name    
+-----------
+ Aniket
+ Mr. Joshi
+
+
+
+14)Display Common City From Student and Techer
+
+(SELECT city From Student ) INTERSECT (SELECT city FROM Teacher);
+
+tcadb15=# (SELECT city From Student ) INTERSECT (SELECT city FROM Teacher);
+   city   
+----------
+ Mumbai
+ Pune
+ Nagpur
+ Kolhapur
+ Nashik
+(5 rows)
+
+
+
+15) Display Student Tecaher From Same City
+
+SELECT name FROM Student Where city IN ((SELECT city FROM Student ) INTERSECT (SELECT city FROM Teacher));
+
+
+tcadb15=# SELECT name FROM Student Where city IN ((SELECT city FROM Student ) INTERSECT (SELECT city FROM Teacher));
+  name  
+--------
+ Aniket
+ Ravi
+ Priya
+ Sneha
+ Rahul
