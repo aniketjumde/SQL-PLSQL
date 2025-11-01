@@ -1,0 +1,167 @@
+One-To-Many
+
+Definition:
+A One-to-Many Relationship means:
+One record in the first table (Parent) can be linked to many records in the second table (Child).
+But each record in the second table is linked to only one record in the first table.
+
+
+1. What is a One-to-Many Relationship?
+
+A one-to-many relationship means:
+
+One record in Table A can be linked to many records in Table B
+
+But each record in Table B is linked to only one record in Table A
+
+ Real-life Example:
+
+One Teacher teaches many Students
+
+One Customer places many Orders
+
+One Department has many Employees
+
+
+
+
+ex: One Teacher Teaches Many Student
+In one To Many /Many to one Foregin Key always Write in  Many wala Table
+
+teacher(tno,name,salary,city)
+Student(rno,name,per,city,tno,ldate)
+
+CREATE TABLE teacher(tno int Primary key,
+		     name Varchar(20),
+		     salary float,
+		     city Varchar(20)
+		     );
+		     
+CREATE TABLE student(rno int primary key,
+		     name varchar(20),
+		     per float,
+		     city varchar(20),
+		     tno int references teacher(tno) ON DELETE CASCADE ON UPDATE CASCADE,
+		     ldate Date
+		     ); 
+		     
+INSERT INTO teacher (tno, name, salary, city) VALUES
+(101, 'Mr. Joshi', 55000, 'Pune'),
+(102, 'Mrs. Patil', 60000, 'Mumbai'),
+(103, 'Mr. Deshmukh', 58000, 'Nagpur');
+
+
+INSERT INTO student (rno, name, per, city, tno) VALUES
+(1, 'Aniket', 85.6, 'Pune', 101),
+(2, 'Ravi', 78.4, 'Mumbai', 102),
+(3, 'Priya', 91.2, 'Nagpur', 103),
+(4, 'Sneha', 88.5, 'Pune', 101),
+(5, 'Rahul', 72.9, 'Pune', 101);
+
+
+tcadb15=# SELECT * FROM TEACHER;
+ tno |     name     | salary |  city  
+-----+--------------+--------+--------
+ 101 | Mr. Joshi    |  55000 | Pune
+ 102 | Mrs. Patil   |  60000 | Mumbai
+ 103 | Mr. Deshmukh |  58000 | Nagpur
+(3 rows)
+
+tcadb15=# SELECT * FROM Student;
+ rno |  name  | per  |  city  | tno |   ldate    
+-----+--------+------+--------+-----+------------
+   1 | Aniket | 85.6 | Pune   | 101 | 2025-01-10
+   2 | Ravi   | 78.4 | Mumbai | 102 | 2025-02-05
+   3 | Priya  | 91.2 | Nagpur | 103 | 2025-03-12
+   4 | Sneha  | 88.5 | Pune   | 101 | 2025-04-01
+   5 | Rahul  | 72.9 | Mumbai | 102 | 2025-05-20
+		   
+
+
+1) Display All the Recordes with Relation Table
+
+tcadb15=# SELECT * FROM Student,teacher WHERE teacher.tno=STUDENT.tno;
+ rno |  name  | per  |  city  | tno |   ldate    | tno |     name     | salary |  city  
+-----+--------+------+--------+-----+------------+-----+--------------+--------+--------
+   1 | Aniket | 85.6 | Pune   | 101 | 2025-01-10 | 101 | Mr. Joshi    |  55000 | Pune
+   2 | Ravi   | 78.4 | Mumbai | 102 | 2025-02-05 | 102 | Mrs. Patil   |  60000 | Mumbai
+   3 | Priya  | 91.2 | Nagpur | 103 | 2025-03-12 | 103 | Mr. Deshmukh |  58000 | Nagpur
+   4 | Sneha  | 88.5 | Pune   | 101 | 2025-04-01 | 101 | Mr. Joshi    |  55000 | Pune
+   5 | Rahul  | 72.9 | Mumbai | 102 | 2025-05-20 | 102 | Mrs. Patil   |  60000 | Mumbai
+
+2) Display Teacher Wise List of Student 
+ 
+  SELECT T.name,S.name FROM Teacher T ,Student S 
+  WHERE T.tno=S.tno;
+
+    name     |  name  
+--------------+--------
+ Mr. Joshi    | Aniket
+ Mrs. Patil   | Ravi
+ Mr. Deshmukh | Priya
+ Mr. Joshi    | Sneha
+ Mrs. Patil   | Rahul
+
+
+
+
+3)2) Display Teacher Wise List of Student  Those Who are present on 2025-04-01
+
+SELECT T.name,S.name FROM Teacher T ,Student S 
+  WHERE T.tno=S.tno
+  AND ldate='2025-04-01';
+
+tcadb15=# SELECT T.name,S.name FROM Teacher T ,Student S 
+  WHERE T.tno=S.tno
+  AND ldate='2025-04-01';
+   name    | name  
+-----------+-------
+ Mr. Joshi | Sneha
+(1 row)
+
+
+
+
+
+4)Display name of Student Those Whose are Present for teacher Mr. Joshi  
+
+SELECT S.name FROM Teacher T,STUDENT S
+WHERE T.tno=S.tno
+AND T.name='Mr. Joshi';
+
+tcadb15=# SELECT S.name FROM Teacher T,STUDENT S
+WHERE T.tno=S.tno
+AND T.name='Mr. Joshi';
+  name  
+--------
+ Aniket
+ Sneha
+
+
+
+
+5)Display name of Student Those Whose are Present for teacher Mr. Joshi  lecture on 2025-01-10 
+
+SELECT S.name FROM Teacher T,STUDENT S
+WHERE T.tno=S.tno
+AND T.name='Mr. Joshi'
+AND ldate='2025-01-10';
+
+tcadb15=# SELECT S.name FROM Teacher T,STUDENT S
+WHERE T.tno=S.tno
+AND T.name='Mr. Joshi'
+AND ldate='2025-01-10';
+  name  
+--------
+ Aniket
+
+
+6) Display Name of teacher Those Who are not starting at
+
+SELECT T.name FROM Teacher T WHERE T.tno NOT IN (SELECT S.tno FROM Student S );
+
+tcadb15=# 
+SELECT T.name FROM Teacher T WHERE T.tno NOT IN (SELECT S.tno FROM Student S );
+   name    
+-----------
+ Mr. Pawar

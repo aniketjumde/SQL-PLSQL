@@ -1,0 +1,165 @@
+One-To-One Relationship
+
+Definition:
+A One-to-One Relationship means:
+Each record in Table A is linked to only one record in Table B,
+and each record in Table B is linked to only one record in Table A.
+
+Real-Life Examples:
+One Person has one Aadhar Card.
+One Student has one Library Card.
+One Employee has one Login Account.
+
+
+Important Rule:
+
+In a One-to-One Relationship,
+the Foreign Key of one table is also a Primary Key(UNIQUE), ensuring a 1–1 connection.
+
+In a One-to-One Relationship,
+the foreign key of one table is also marked as UNIQUE,
+so that it cannot repeat — maintaining one-to-one mapping.
+
+
+
+Example: One Student has One ID Card
+
+Student(ID,name,branch,year)
+IDCard(cardNo,issue_date,expire_date,ID)
+
+
+CREATE TABLE Student(ID INT PRIMARY KEY,
+		     name VARCHAR(20),
+		     branch VARCHAR(20),
+		     year INT);
+CREATE TABLE IDCard(cardNo INT PRIMARY KEY,
+		    issue_date DATE,
+		    expire_date DATE,
+		    ID INT UNIQUE REFERENCES STUDENT(ID) ON UPDATE CASCADE ON DELETE CASCADE);
+		    
+		    
+INSERT INTO Student VALUES
+(1, 'Aniket', 'IT', 3),
+(2, 'Ravi', 'Computer', 2),
+(3, 'Priya', 'ENTC', 4),
+(4, 'Sneha', 'Civil', 1),
+(5, 'Rahul', 'Mechanical', 3);
+
+INSERT INTO IDCard VALUES
+(1001, '2024-01-15', '2026-01-15', 1),
+(1002, '2024-02-10', '2026-02-10', 2),
+(1003, '2024-03-12', '2026-03-12', 3),
+(1004, '2024-04-05', '2026-04-05', 4),
+(1005, '2024-05-20', '2026-05-20', 5);
+
+
+tcadb15=# SELECT * FROM STUDENT;
+ id |  name  |   branch   | year 
+----+--------+------------+------
+  1 | Aniket | IT         |    3
+  2 | Ravi   | Computer   |    2
+  3 | Priya  | ENTC       |    4
+  4 | Sneha  | Civil      |    1
+  5 | Rahul  | Mechanical |    3
+
+
+tcadb15=# SELECT * FROM IDCARD;
+ cardno | issue_date | expire_date | id 
+--------+------------+-------------+----
+   1001 | 2024-01-15 | 2026-01-15  |  1
+   1002 | 2024-02-10 | 2026-02-10  |  2
+   1003 | 2024-03-12 | 2026-03-12  |  3
+   1004 | 2024-04-05 | 2026-04-05  |  4
+   1005 | 2024-05-20 | 2026-05-20  |  5
+
+
+
+
+1) Display All Students with their ID Card Details
+
+SELECT * FROM STUDENT ,IDCARD
+WHERE STUDENT.ID=IDCARD.ID;
+
+id |  name  |   branch   | year | cardno | issue_date | expire_date | id 
+----+--------+------------+------+--------+------------+-------------+----
+  1 | Aniket | IT         |    3 |   1001 | 2024-01-15 | 2026-01-15  |  1
+  2 | Ravi   | Computer   |    2 |   1002 | 2024-02-10 | 2026-02-10  |  2
+  3 | Priya  | ENTC       |    4 |   1003 | 2024-03-12 | 2026-03-12  |  3
+  4 | Sneha  | Civil      |    1 |   1004 | 2024-04-05 | 2026-04-05  |  4
+  5 | Rahul  | Mechanical |    3 |   1005 | 2024-05-20 | 2026-05-20  |  5
+
+
+
+2)Display Student Name and ID Card Number Only
+
+SELECT STUDENT.name,IDCARD.cardno FROM STUDENT ,IDCARD
+WHERE STUDENT.ID=IDCARD.ID;
+
+name  | cardno 
+--------+--------
+ Aniket |   1001
+ Ravi   |   1002
+ Priya  |   1003
+ Sneha  |   1004
+ Rahul  |   1005
+
+
+
+3) Display Details of Student Whose ID Card Was Issued on '2024-03-12'
+
+
+SELECT * FROM STUDENT ,IDCARD
+WHERE STUDENT.ID=IDCARD.ID
+AND issue_date='2024-03-12';
+
+id | name  | branch | year | cardno | issue_date | expire_date | id 
+----+-------+--------+------+--------+------------+-------------+----
+  3 | Priya | ENTC   |    4 |   1003 | 2024-03-12 | 2026-03-12  |  3
+
+
+
+4) Display Students Whose ID Card Will Expire in 2026
+
+SELECT S.name, I.expire_date
+FROM Student S, IDCard I
+WHERE S.ID = I.ID
+AND EXTRACT(YEAR FROM I.expire_date) = 2026;
+
+
+
+tcadb15=# SELECT S.name, I.expire_date
+FROM Student S, IDCard I
+WHERE S.ID = I.ID
+AND EXTRACT(YEAR FROM I.expire_date) = 2026;
+  name  | expire_date 
+--------+-------------
+ Aniket | 2026-01-15
+ Ravi   | 2026-02-10
+ Priya  | 2026-03-12
+ Sneha  | 2026-04-05
+ Rahul  | 2026-05-20
+
+
+
+
+5) Display ID Card Information for Student 'Aniket'
+
+SELECT * FROM STUDENT ,IDCARD
+WHERE STUDENT.ID=IDCARD.ID
+AND STUDENT.name='Aniket';
+
+
+tcadb15=# SELECT * FROM STUDENT ,IDCARD
+WHERE STUDENT.ID=IDCARD.ID
+AND STUDENT.name='Aniket';
+ id |  name  | branch | year | cardno | issue_date | expire_date | id 
+----+--------+--------+------+--------+------------+-------------+----
+  1 | Aniket | IT     |    3 |   1001 | 2024-01-15 | 2026-01-15  |  1
+
+
+
+
+6) Display Students Who Do Not Have an ID Card Yet
+
+SELECT S.name FROM Student S
+WHERE S.ID NOT IN (SELECT ID FROM IDCard);
