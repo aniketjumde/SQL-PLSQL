@@ -1,0 +1,65 @@
+SYNTAX:	
+
+DELIMITER //
+
+CREATE PROCEDURE procedure_name()
+BEGIN
+    -- SQL statements
+END //
+
+DELIMITER ;
+
+Example 1: Simple Procedure
+
+DELIMITER //
+CREATE PROCEDURE hello()
+BEGIN
+	SELECT "Hello from MYSQL";
+END//
+DELIMITER ;
+
+
+Example 2; Procedure with IN Parameter
+
+DELIMITER //
+CREATE PROCEDURE message(IN name VARCHAR(20))
+BEGIN
+	SELECT CONCAT("HELLO ",name) AS message;
+END//
+DELIMITER ;
+
+Example 3: Procedure with OUT Parameter
+
+DELIMITER //
+CREATE PROCEDURE calculate_square(IN num INT,OUT result INT)
+BEGIN
+	SET result=num*num;
+END//
+DELIMITER ;
+
+Example 4: Procedure with INOUT
+
+
+DELIMITER //
+CREATE PROCEDURE increase_salary(INOUT salary DECIMAL(10,2))
+BEGIN
+	SET salary=salary+10000;
+END//
+DELIMITER ;
+
+
+Example 5: Procedure with IF-ELSE
+
+DELIMITER //
+CREATE PROCEDURE check_salary(IN salary INT)
+BEGIN
+	IF salary>=50000 THEN
+		SELECT 'HIGH Salary' AS result;
+	ELSE
+		SELECT 'LOW Salary' AS result;
+	END IF;
+END//
+DELIMITER ;
+
+
+

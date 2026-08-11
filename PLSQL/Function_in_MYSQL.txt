@@ -1,0 +1,68 @@
+Synatx
+
+DELIMITER //
+
+CREATE FUNCTION function_name(parameter_name DATATYPE)
+RETURNS return_datatype
+DETERMINISTIC
+BEGIN
+    -- logic
+    RETURN value;
+END //
+
+DELIMITER ;
+
+
+
+
+
+
+1. Basic Function
+
+DELIMITER //
+CREATE  FUNCTION add_numbers()
+RETURN NUMBER
+DETERMINISTIC
+BEGIN
+    RETURN 10 + 20;
+END //
+DELIMITER ;
+
+
+2.Addition of two Number
+
+DELIMITER //
+
+CREATE FUNCTION add_numbers(a INT, b INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    RETURN a + b;
+END //
+
+DELIMITER ;
+
+
+3.calculate bonus (Used Variable)
+DELIMITER //
+CREATE FUNCTION calculate_bonus(p_salary DECIMAL(10,2)) 
+RETURNS DECIMAL(10,2) 
+DETERMINISTIC 
+BEGIN 
+	DECLARE v_bonus DECIMAL(10,2); 
+	SET v_bonus = p_salary * 0.10; 
+	RETURN v_bonus; 
+END // 
+DELIMITER ;
+
+4.Function with IF-ELSE
+
+CREATE FUNCTION check_result(marks INT)
+RETURN VARCHAR(100)
+DETERMINISTIC
+BEGIN
+
+END //
+DELIMITER ;
+
+

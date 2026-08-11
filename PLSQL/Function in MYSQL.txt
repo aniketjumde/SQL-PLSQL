@@ -1,0 +1,92 @@
+Synatx
+
+DELIMITER //
+
+CREATE FUNCTION function_name(parameter_name DATATYPE)
+RETURNS return_datatype
+DETERMINISTIC
+BEGIN
+    -- logic
+    RETURN value;
+END //
+
+DELIMITER ;
+
+
+
+
+
+
+1. Basic Function
+
+DELIMITER //
+CREATE  FUNCTION add_numbers()
+RETURN NUMBER
+DETERMINISTIC
+BEGIN
+    RETURN 10 + 20;
+END //
+DELIMITER ;
+
+
+2.Addition of two Number
+
+DELIMITER //
+
+CREATE FUNCTION add_numbers(a INT, b INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    RETURN a + b;
+END //
+
+DELIMITER ;
+
+
+3.calculate bonus (Used Variable)
+DELIMITER //
+CREATE FUNCTION calculate_bonus(p_salary DECIMAL(10,2)) 
+RETURNS DECIMAL(10,2) 
+DETERMINISTIC 
+BEGIN 
+	DECLARE v_bonus DECIMAL(10,2); 
+	SET v_bonus = p_salary * 0.10; 
+	RETURN v_bonus; 
+END // 
+DELIMITER ;
+
+4.Function with IF-ELSE
+DELIMITER //
+CREATE FUNCTION check_result(marks INT)
+RETURNS VARCHAR(100)
+DETERMINISTIC
+BEGIN
+	IF marks>=60 THEN
+	   RETURN "PASS";
+	ELSE
+	   RETURN "FAIL";
+	END IF;
+END //
+DELIMITER ;
+
+
+5.Function with Forloop
+
+DELIMITER //
+CREATE FUNCTION sum_numbesr(n INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE total INT DEFAULT 0;
+
+    WHILE i<=n DO
+      SET total=total + i;
+      SET i=i+1;
+   END WHILE;
+   
+   RETURN total;
+
+END //
+DELIMITER;
+
